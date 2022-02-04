@@ -70,23 +70,19 @@ class Player(pygame.sprite.Sprite):
     def draw(self, screen):
         screen.blit(self.image, self.rect)
 
-    def update(self, move, box_group):
+    def update(self, move, all_sprites, box_group):
         if move == "right":
-            self.rect.x += 50
-            if pygame.sprite.spritecollideany(self, box_group):
-                self.rect.x -= 50
+            for el in all_sprites:
+                el.rect.x -= 50
         if move == "left":
-            self.rect.x -= 50
-            if pygame.sprite.spritecollideany(self, box_group):
-                self.rect.x += 50
+            for el in all_sprites:
+                el.rect.x += 50
         if move == "up":
-            self.rect.y -= 50
-            if pygame.sprite.spritecollideany(self, box_group):
-                self.rect.y += 50
+            for el in all_sprites:
+                el.rect.y += 50
         if move == "down":
-            self.rect.y += 50
-            if pygame.sprite.spritecollideany(self, box_group):
-                self.rect.y -= 50
+            for el in all_sprites:
+                el.rect.y -= 50
 
 
 if __name__ == "__main__":
@@ -99,10 +95,15 @@ if __name__ == "__main__":
     box_group = pygame.sprite.Group()
     player_group = pygame.sprite.Group()
     level = load_level(f"{name}.txt")
+    all_sprites = pygame.sprite.Group()
     if not level:
         pygame.quit()
     else:
         generate_level(level)
+        for el in grass_group:
+            all_sprites.add(el)
+        for el in box_group:
+            all_sprites.add(el)
         exit = start_screen()
         if not exit:
             runing = True
@@ -112,13 +113,14 @@ if __name__ == "__main__":
                         runing = False
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_RIGHT:
-                            player_group.update("right", box_group)
+                            player_group.update("right", all_sprites, box_group)
                         if event.key == pygame.K_LEFT:
-                            player_group.update("left", box_group)
+                            player_group.update("left", all_sprites, box_group)
                         if event.key == pygame.K_UP:
-                            player_group.update("up", box_group)
+                            player_group.update("up", all_sprites, box_group)
                         if event.key == pygame.K_DOWN:
-                            player_group.update("down", box_group)
+                            player_group.update("down", all_sprites, box_group)
+                screen.fill("black")
                 grass_group.draw(screen)
                 box_group.draw(screen)
                 player_group.draw(screen)
